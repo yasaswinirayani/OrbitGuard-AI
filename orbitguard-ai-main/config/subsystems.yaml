@@ -1,0 +1,65 @@
+# =============================================================================
+# OrbitGuard AI — Telemetry Feature -> Subsystem Mapping
+# =============================================================================
+# Map each telemetry feature name (as it appears in your CSV / feature_columns)
+# to a subsystem label. Matching is case-insensitive and matches on substring,
+# so "battery_voltage_mv" will still map to "Power" via the "voltage" rule.
+#
+# Any feature that matches no rule below is reported as "Unknown / Unmapped"
+# rather than guessed — do not invent a subsystem in code.
+#
+# Add / edit rules freely for your dataset's actual column names.
+# =============================================================================
+
+mapping:
+  Power:
+    - voltage
+    - current
+    - battery
+    - solar
+    - charge
+    - power
+
+  Thermal:
+    - temp
+    - thermal
+    - heat
+
+  Attitude:
+    - gyro
+    - orientation
+    - attitude
+    - angular
+    - accel
+    - magnetometer
+    - mag_
+    - quaternion
+
+  Communication:
+    - signal
+    - comm
+    - rssi
+    - snr
+    - antenna
+    - downlink
+    - uplink
+
+  Orbit:
+    - altitude
+    - orbit
+    - apogee
+    - perigee
+
+  Payload:
+    - payload
+    - sensor_data
+    - instrument
+
+  OBC:
+    - cpu
+    - memory
+    - obc
+    - processor
+    - clock
+
+unmapped_label: "Unknown / Unmapped"

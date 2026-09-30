@@ -1,0 +1,11 @@
+# OrbitGuard AI — dependencies
+# Tested target: Python 3.12, Windows/Linux/macOS
+
+numpy>=1.26,<2.0
+pandas>=2.1,<3.0
+scikit-learn>=1.4,<2.0
+joblib>=1.3,<2.0
+tensorflow>=2.16,<2.17
+streamlit>=1.32,<2.0
+plotly>=5.20,<6.0
+PyYAML>=6.0,<7.0

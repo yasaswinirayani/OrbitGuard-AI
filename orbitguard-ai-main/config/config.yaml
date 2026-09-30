@@ -1,0 +1,92 @@
+# =============================================================================
+# OrbitGuard AI — Main Configuration
+# =============================================================================
+# Edit this file to match YOUR real CubeSat telemetry dataset.
+# Nothing in this project auto-detects a "correct" schema for you — every
+# value below should be checked against your actual CSV before training.
+# =============================================================================
+
+dataset:
+  path: "data/telemetry.csv"
+  timestamp_column: "timestamp"
+
+  feature_columns:
+    - temperature
+    - battery_voltage
+    - battery_current
+    - solar_voltage
+    - solar_current
+    - power
+    - gyro_x
+    - gyro_y
+    - gyro_z
+    - mag_x
+    - mag_y
+    - mag_z
+    - rf_signal
+    - rssi
+    - snr
+    - altitude
+
+  label_column: "anomaly"
+  normal_label_value: 0
+# -----------------------------------------------------------------------------
+# Train / validation / test split (chronological, not shuffled — telemetry
+# is a time series, so shuffling would leak future information into training)
+# -----------------------------------------------------------------------------
+split:
+  train_split: 0.7
+  validation_split: 0.15
+  test_split: 0.15
+
+# -----------------------------------------------------------------------------
+# LSTM Autoencoder settings
+# -----------------------------------------------------------------------------
+lstm:
+  window_size: 30          # number of consecutive readings per sequence
+  step_size: 1              # stride between windows (1 = maximum overlap)
+  latent_dim: 16
+  epochs: 50
+  batch_size: 32
+  learning_rate: 0.001
+  validation_patience: 5    # early-stopping patience (epochs)
+
+# -----------------------------------------------------------------------------
+# Isolation Forest settings
+# -----------------------------------------------------------------------------
+isolation_forest:
+  n_estimators: 200
+  contamination: "auto"
+  random_state: 42
+
+# -----------------------------------------------------------------------------
+# Score fusion
+# -----------------------------------------------------------------------------
+fusion:
+  # final_score = alpha * isolation_forest_score_norm
+  #               + (1 - alpha) * lstm_score_norm
+  alpha: 0.5
+
+# -----------------------------------------------------------------------------
+# Severity thresholds — percentile-based, computed from the fused anomaly
+# score distribution on the VALIDATION (normal) split. These percentiles are
+# used at runtime to bucket new scores into Low / Medium / High / Critical.
+# -----------------------------------------------------------------------------
+severity:
+  medium_percentile: 90
+  high_percentile: 97
+  critical_percentile: 99.5
+
+# -----------------------------------------------------------------------------
+# Trend detection
+# -----------------------------------------------------------------------------
+trend:
+  window: 10                 # number of recent points to evaluate
+  slope_flat_threshold: 0.01  # normalized slope below this = "Stable"
+
+# -----------------------------------------------------------------------------
+# Live replay (dashboard demonstration mode)
+# -----------------------------------------------------------------------------
+live_replay:
+  default_interval_seconds: 1.0
+  source: "test"             # which split to replay: "train" | "validation" | "test" | "full"
